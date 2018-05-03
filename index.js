@@ -81,8 +81,8 @@ class TodoView {
                 <p>${item.desc}</p>
                 <button data-id = "${i}">delete</button>
              </li>
-            `);
-        })
+            `)
+        });
     }
     static onAdd(){
         return Rx.Observable.fromEvent(this.add,"click");
@@ -99,6 +99,11 @@ class TodoView {
         this.theme.value = "";
         this.desc.value = "";
     }
+    static onDel(){
+        return Rx.Observable.fromEvent(this.list,"click")
+            .filter(e=>e.target.matches("button"))
+            .map(e=>e.target.dataset.id);
+    }
 }
 
 class TodoPresenter {
@@ -106,6 +111,7 @@ class TodoPresenter {
         TodoView.init();
         this.update();
         TodoView.onAdd().subscribe(e=>this.add());
+        TodoView.onDel().subscribe(id=>this.delete(id));
     }
     static update(){
         TodoView.redraw(ItemRepository.items)
@@ -116,11 +122,17 @@ class TodoPresenter {
                 "name":TodoView.getName(),
                 "desc":TodoView.getDesc(),
             });
+            TodoView.clearForm();
         } catch (e) {
             alert(e.message);
         }
-
         this.update();
     }
+    static delete(id){
+        ItemRepository.delete(id);
+        this.update();
+    }
+
 }
+
 window.addEventListener("load",()=>TodoPresenter.init());
