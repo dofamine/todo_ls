@@ -40,7 +40,7 @@ class ItemRepository {
     }
 
     static load() {
-        let _items = CookieManager.getAll().items;
+        let _items = window.localStorage.getItem("items");
         this._items = _items ? JSON.parse(_items) : [];
     }
 
@@ -49,11 +49,8 @@ class ItemRepository {
         this.save();
     }
 
-    static save(life = 3600 * 30) {
-        CookieManager.set("items",
-            JSON.stringify(this.items),
-            null,
-            life);
+    static save() {
+        window.localStorage.setItem("items",JSON.stringify(this.items));
         this.load()
     }
 
