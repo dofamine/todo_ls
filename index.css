@@ -38,18 +38,18 @@
     font-size: 20px;
     font-style: italic;
 }
-.cont ul {
+.cont ul.list {
     list-style: none;
 }
-.cont ul>li{
+.cont ul.list>li{
     padding: 20px;
     background: #ccc;
     margin-bottom: 5px;
 }
-.cont ul>li>h3{
+.cont ul.list>li>h3{
     text-align: center;
 }
-.cont ul>li>p {
+.cont ul.list>li>p {
     text-indent: 20px;
     margin-bottom: 20px;
 }

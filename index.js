@@ -12,6 +12,7 @@ class CookieManager {
         }
         document.cookie = s;
     }
+
     static getAll() {
         return document.cookie.split(";")
             .reduce((prev, current) => {
@@ -20,42 +21,106 @@ class CookieManager {
                 return prev;
             }, {});
     }
-    static remove(key,path=null) {
-        CookieManager.set(key,"",path,-1)
+
+    static remove(key, path = null) {
+        CookieManager.set(key, "", path, -1)
     }
 
 }
-class ItemRepository{
-    static get items(){
-        if(!this._items) this.load();
+
+class ItemRepository {
+    static get items() {
+        if (!this._items) this.load();
         return this._items;
     }
-    static set items(value){
+
+    static set items(value) {
         this._items = value;
         this.save();
     }
-    static load(){
+
+    static load() {
         let _items = CookieManager.getAll().items;
         this._items = _items ? JSON.parse(_items) : [];
     }
-    static delete(index){
-        this.items.splice(index,1);
+
+    static delete(index) {
+        this.items.splice(index, 1);
         this.save();
     }
-    static save(life=3600*30){
+
+    static save(life = 3600 * 30) {
         CookieManager.set("items",
             JSON.stringify(this.items),
             null,
             life);
         this.load()
     }
-    static add(item){
+
+    static add(item) {
         this.items.push(item);
         this.save();
     }
 }
-class TodoView extends ItemRepository{
-    static init(){
+
+class TodoView {
+    static init() {
         this.list = document.querySelector(".list");
+        this.form = document.querySelector(".form");
+        this.theme = document.getElementById("name");
+        this.desc = document.getElementById("desc");
+        this.add = this.form.querySelector("button");
+    }
+
+    static redraw(items) {
+        this.list.innerHTML = "";
+        items.forEach((item, i) => {
+            this.list.insertAdjacentHTML("beforeEnd", `
+            <li>
+                <h3>${item.name}</h3>
+                <p>${item.desc}</p>
+                <button data-id = "${i}">delete</button>
+             </li>
+            `);
+        })
+    }
+    static onAdd(){
+        return Rx.Observable.fromEvent(this.add,"click");
+    }
+    static getName(){
+        if (this.theme.value.trim().length < 1) throw new Error("Enter all fields");
+        return this.theme.value.trim();
+    }
+    static getDesc(){
+        if (this.desc.value.trim().length < 1) throw new Error("Enter all fields");
+        return this.desc.value.trim();
+    }
+    static clearForm(){
+        this.theme.value = "";
+        this.desc.value = "";
     }
 }
+
+class TodoPresenter {
+    static init(){
+        TodoView.init();
+        this.update();
+        TodoView.onAdd().subscribe(e=>this.add());
+    }
+    static update(){
+        TodoView.redraw(ItemRepository.items)
+    }
+    static add(){
+        try {
+            ItemRepository.add({
+                "name":TodoView.getName(),
+                "desc":TodoView.getDesc(),
+            });
+        } catch (e) {
+            alert(e.message);
+        }
+
+        this.update();
+    }
+}
+window.addEventListener("load",()=>TodoPresenter.init());
