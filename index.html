@@ -3,9 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="./index.css">
+    <script type="text/javascript" src="./node_modules/rxjs/bundles/rxjs.umd.js"></script>
     <script type="text/javascript" src="./index.js"></script>
 </head>
 <body>
-
+<div class="cont">
+    <div class="form">
+        <label for="name">Theme</label>
+        <input type="text" id="name" name="name">
+        <label for="desc">Description</label>
+        <textarea name="desc" id="desc"></textarea>
+        <button>add</button>
+    </div>
+    <ul>
+        <li>
+            <h3>name</h3>
+            <p>description</p>
+            <button>delete</button>
+        </li>
+        <li>
+            <h3>name</h3>
+            <p>description</p>
+            <button>delete</button>
+        </li>
+    </ul>
+</div>
 </body>
 </html>

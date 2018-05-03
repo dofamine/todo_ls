@@ -23,5 +23,39 @@ class CookieManager {
     static remove(key,path=null) {
         CookieManager.set(key,"",path,-1)
     }
-}
 
+}
+class ItemRepository{
+    static get items(){
+        if(!this._items) this.load();
+        return this._items;
+    }
+    static set items(value){
+        this._items = value;
+        this.save();
+    }
+    static load(){
+        let _items = CookieManager.getAll().items;
+        this._items = _items ? JSON.parse(_items) : [];
+    }
+    static delete(index){
+        this.items.splice(index,1);
+        this.save();
+    }
+    static save(life=3600*30){
+        CookieManager.set("items",
+            JSON.stringify(this.items),
+            null,
+            life);
+        this.load()
+    }
+    static add(item){
+        this.items.push(item);
+        this.save();
+    }
+}
+class TodoView extends ItemRepository{
+    static init(){
+        this.list = document.querySelector(".list");
+    }
+}

@@ -1,0 +1,55 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+.cont{
+    width: 1000px;
+    background: #369;
+    margin: 0 auto;
+}
+#name, #desc {
+    display: block;
+    width: 300px;
+    margin-bottom: 20px;
+}
+.cont .form {
+    padding: 30px;
+    width: 420px;
+    margin: auto;
+}
+.cont .form button {
+    width: 50px;
+    padding: 5px;
+    text-align: center;
+}
+.cont .form label {
+    float: left;
+    width: 100px;
+    margin-bottom: 20px;
+}
+#name {
+    line-height: 30px;
+    height: 30px;
+    font-size: 20px;
+}
+#desc {
+    resize: none;
+    height:150px;
+    font-size: 20px;
+    font-style: italic;
+}
+.cont ul {
+    list-style: none;
+}
+.cont ul>li{
+    padding: 20px;
+    background: #ccc;
+    margin-bottom: 5px;
+}
+.cont ul>li>h3{
+    text-align: center;
+}
+.cont ul>li>p {
+    text-indent: 20px;
+    margin-bottom: 20px;
+}
