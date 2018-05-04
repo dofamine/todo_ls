@@ -29,22 +29,22 @@ class CookieManager {
 }
 
 class ItemRepository {
-    static get items() {
+    get items() {
         if (!this._items) this.load();
         return this._items;
     }
 
-    static set items(value) {
+    set items(value) {
         this._items = value;
         this.save();
     }
 
-    static load() {
+    load() {
         let _items = window.localStorage.getItem("items");
         this._items = _items ? JSON.parse(_items) : [];
     }
 
-    static delete(index) {
+    delete(index) {
         this.items.splice(index, 1);
         this.save();
     }
@@ -54,14 +54,14 @@ class ItemRepository {
         this.load()
     }
 
-    static add(item) {
+    add(item) {
         this.items.push(item);
         this.save();
     }
 }
 
 class TodoView {
-    static init() {
+    constructor(){
         this.list = document.querySelector(".list");
         this.form = document.querySelector(".form");
         this.theme = document.getElementById("name");
@@ -69,7 +69,7 @@ class TodoView {
         this.add = this.form.querySelector("button");
     }
 
-    static redraw(items) {
+    redraw(items) {
         this.list.innerHTML = "";
         items.forEach((item, i) => {
             this.list.insertAdjacentHTML("beforeEnd", `
@@ -81,22 +81,22 @@ class TodoView {
             `)
         });
     }
-    static onAdd(){
+    onAdd(){
         return Rx.Observable.fromEvent(this.add,"click");
     }
-    static getName(){
+    getName(){
         if (this.theme.value.trim().length < 1) throw new Error("Enter all fields");
         return this.theme.value.trim();
     }
-    static getDesc(){
+    getDesc(){
         if (this.desc.value.trim().length < 1) throw new Error("Enter all fields");
         return this.desc.value.trim();
     }
-    static clearForm(){
+    clearForm(){
         this.theme.value = "";
         this.desc.value = "";
     }
-    static onDel(){
+    onDel(){
         return Rx.Observable.fromEvent(this.list,"click")
             .filter(e=>e.target.matches("button"))
             .map(e=>e.target.dataset.id);
@@ -104,32 +104,33 @@ class TodoView {
 }
 
 class TodoPresenter {
-    static init(){
-        TodoView.init();
+    constructor(){
+        this.view = new TodoView();
+        this.model = new ItemRepository();
         this.update();
-        TodoView.onAdd().subscribe(e=>this.add());
-        TodoView.onDel().subscribe(id=>this.delete(id));
+        this.view.onAdd().subscribe(e=>this.add());
+        this.view.onDel().subscribe(id=>this.delete(id));
     }
-    static update(){
-        TodoView.redraw(ItemRepository.items)
+    update(){
+        this.view.redraw(this.model.items)
     }
-    static add(){
+    add(){
         try {
-            ItemRepository.add({
-                "name":TodoView.getName(),
-                "desc":TodoView.getDesc(),
+            this.model.add({
+                "name":this.view.getName(),
+                "desc":this.view.getDesc(),
             });
-            TodoView.clearForm();
+            this.view.clearForm();
         } catch (e) {
             alert(e.message);
         }
         this.update();
     }
-    static delete(id){
-        ItemRepository.delete(id);
+    delete(id){
+        this.model.delete(id);
         this.update();
     }
 
 }
 
-window.addEventListener("load",()=>TodoPresenter.init());
+window.addEventListener("load",()=>new TodoPresenter());
